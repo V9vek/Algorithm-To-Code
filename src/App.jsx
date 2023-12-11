@@ -1,21 +1,21 @@
 import { useState } from "react";
+import { preTrain } from "./assets/util";
+import TypeWriter from "typewriter-effect";
 import "./App.css";
 
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "INSERT_OPENAI_APIKEY";
 
 function App() {
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState("");
-
-  // -H "Content-Type: application/json" \
-  // -H "Authorization: Bearer $OPENAI_API_KEY" \
+  const [loading, setLodaing] = useState(false);
 
   const APIBody = {
     model: "gpt-3.5-turbo",
     messages: [
       {
         role: "user",
-        content: "Write a Python function for " + prompt,
+        content: preTrain + prompt,
       },
     ],
     temperature: 0.7,
@@ -24,6 +24,7 @@ function App() {
   };
 
   const callOpenAIAPI = async () => {
+    setLodaing(true);
     await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -37,11 +38,13 @@ function App() {
       })
       .then((data) => {
         console.log(data);
+        setLodaing(false);
         setOutput(data.choices[0].message.content);
       });
   };
 
   const onHandlSubmit = (e) => {
+    setOutput("");
     e.preventDefault();
     console.log(prompt);
     callOpenAIAPI();
@@ -54,11 +57,8 @@ function App() {
 
   return (
     <>
-      <div>
-        <div className="shadow-md h-[200px] my-10 text-xl">
-          <p>{output}</p>
-        </div>
-        <div className="shadow-md my-10">
+      <div className="text-xl">
+        <div className="my-10">
           <form onSubmit={onHandlSubmit}>
             <textarea
               name=""
@@ -69,17 +69,33 @@ function App() {
               placeholder="Provide instructions..."
               value={prompt}
               onChange={onHandlePrompt}
-              className="text-xl w-full border-2 rounded-md border-black p-2"
+              className="text-xl w-full p-8 outline rounded-md border-black p-2"
             ></textarea>
 
             <button
               type="submit"
-              className="bg-blue-500 p-2 rounded-sm text-white m-2"
+              className="bg-blue-500 px-8 py-4 rounded-lg text-white m-2"
             >
-              Submit
+              {loading ? "Loading..." : "Submit"}
             </button>
           </form>
         </div>
+
+        {!loading && output && (
+          <div className="shadow-md p-8 text-left my-10 rounded outline">
+            <pre>
+              <TypeWriter
+                options={{
+                  autoStart: true,
+                  delay: 25,
+                }}
+                onInit={(typewriter) => {
+                  typewriter.typeString(output).start();
+                }}
+              ></TypeWriter>
+            </pre>
+          </div>
+        )}
       </div>
     </>
   );
