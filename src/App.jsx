@@ -3,7 +3,7 @@ import { preTrain } from "./assets/util";
 import TypeWriter from "typewriter-effect";
 import "./App.css";
 
-const OPENAI_API_KEY = "INSERT_OPENAI_APIKEY";
+const OPENAI_API_KEY = "ADD_YOUR_OWN_API_KEY";
 
 function App() {
   const [prompt, setPrompt] = useState("");
@@ -69,7 +69,7 @@ function App() {
               placeholder="Provide instructions..."
               value={prompt}
               onChange={onHandlePrompt}
-              className="text-xl w-full p-8 outline rounded-md border-black p-2"
+              className="text-xl w-full p-8 outline rounded-md border-black"
             ></textarea>
 
             <button
